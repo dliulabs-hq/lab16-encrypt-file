@@ -1,0 +1,56 @@
+name: Encrypt Files
+
+on:
+  push:
+
+  repository_dispatch:
+
+jobs:
+  encrypt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Encrypt
+        run: |
+          pwd
+          git init
+          git remote add origin "https://$GITHUB_ACTOR:${{secrets.GITHUB_TOKEN}}@github.com/$GITHUB_REPOSITORY.git"
+          git config --global user.email "my-bot@bot.com"
+          git config --global user.name "my-bot"
+          git fetch
+          git checkout main
+          git branch --set-upstream-to=origin/main
+          git pull
+          ls
+          pushd "${GITHUB_WORKSPACE}/inputs"
+          for file in $(ls | grep -v ".gpg"); do gpg -c --cipher-algo AES256 --compress-algo 1 --batch --passphrase "$PASSPHRASE" --output "${GITHUB_WORKSPACE}/outputs/$file.gpg" $file; done
+          popd
+          git add -A
+          git commit -m "save encrypted files"
+          git push
+        env:
+          PASSPHRASE: ${{ secrets.PASSPHRASE }}
+
+  decrypt:
+    runs-on: ubuntu-latest
+    needs: [encrypt]
+    steps:
+      - name: Decrypt
+        run: |
+          pwd
+          git init
+          git remote add origin "https://$GITHUB_ACTOR:${{secrets.GITHUB_TOKEN}}@github.com/$GITHUB_REPOSITORY.git"
+          git config --global user.email "my-bot@bot.com"
+          git config --global user.name "my-bot"
+          git fetch
+          git checkout main
+          git branch --set-upstream-to=origin/main
+          git pull
+          ls
+          pushd "${GITHUB_WORKSPACE}/outputs"
+          for file in $(ls | grep ".gpg"); do gpg --quiet --batch --yes --decrypt --passphrase "$PASSPHRASE" --output "${GITHUB_WORKSPACE}/decrypted/$file.new" $file && rm -f $file; done
+          popd
+          git add -A
+          git commit -m "save decrypted files"
+          git push
+        env:
+          PASSPHRASE: ${{ secrets.PASSPHRASE }}
