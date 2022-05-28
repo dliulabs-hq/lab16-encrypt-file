@@ -22,7 +22,7 @@ jobs:
           git pull
           ls
           pushd "${GITHUB_WORKSPACE}/inputs"
-          for file in $(ls | grep -v ".gpg"); do gpg -c --cipher-algo AES256 --compress-algo 1 --batch --passphrase "$PASSPHRASE" --output "${GITHUB_WORKSPACE}/outputs/$file.gpg" $file; done
+          for file in $(ls | grep -v ".gpg"); do gpg -c --cipher-algo AES256 --compress-algo 1 --batch --passphrase "$PASSPHRASE" --output "${GITHUB_WORKSPACE}/encrypted/$file.gpg" $file; done
           popd
           git add -A
           git commit -m "save encrypted files"
@@ -46,7 +46,7 @@ jobs:
           git branch --set-upstream-to=origin/main
           git pull
           ls
-          pushd "${GITHUB_WORKSPACE}/outputs"
+          pushd "${GITHUB_WORKSPACE}/encrypted"
           for file in $(ls | grep ".gpg"); do gpg --quiet --batch --yes --decrypt --passphrase "$PASSPHRASE" --output "${GITHUB_WORKSPACE}/decrypted/$file.new" $file && rm -f $file; done
           popd
           pushd "${GITHUB_WORKSPACE}/decrypted"
