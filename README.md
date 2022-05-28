@@ -4,6 +4,8 @@
 
 [GitHub Actions - Encrypted Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets#limits-for-secrets) 
 
+See the [workflow file](https://github.com/dliulabs-hq/lab16-encrypt-file/actions/workflows/encrypt-file.yml)
+
 ## Setup GnuPG
 
 ```
