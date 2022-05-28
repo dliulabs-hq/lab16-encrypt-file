@@ -17,26 +17,5 @@ gpg --symmetric --cipher-algo AES256 --batch --passphrase "<password>" some_file
 ```
 
 ```
-$ls | gpg --multifile --encrypt
-
-for x in *; do 
-  gpg -r (yourencrytionkey.com) -o $x.pgp -e $x
-done
-
-FOR %i in (C:\GPGFILES\*.gpg) do (gpg --batch --yes --passphrase key123 --output "%i.txt" --decrypt "%i")
-`
 for file in $(ls | grep -v ".gpg"); do gpg -c --cipher-algo AES256 --compress-algo 1 --batch --passphrase "<password>" $file && rm -f $file; done
 ```
-
-```
-pushd input
-echo "hello, world\n"
-echo "hello, world"
-echo "hello, world\!"
-echo "hello, world\!" > test.txt
-gpg --symmetric --cipher-algo AES256 --batch --passphrase "<password>" test.txt
-popd
-
-gpg --symmetric --cipher-algo AES256 --batch --passphrase "<password>" some_file.json
-gpg --symmetric --cipher-algo AES256 --batch --passphrase "<password>" some_file.json
-
