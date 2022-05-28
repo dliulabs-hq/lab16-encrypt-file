@@ -49,6 +49,9 @@ jobs:
           pushd "${GITHUB_WORKSPACE}/outputs"
           for file in $(ls | grep ".gpg"); do gpg --quiet --batch --yes --decrypt --passphrase "$PASSPHRASE" --output "${GITHUB_WORKSPACE}/decrypted/$file.new" $file && rm -f $file; done
           popd
+          pushd "${GITHUB_WORKSPACE}/decrypted"
+          for f in *.gpg.new; do mv -f -- "$f" "${f%.gpg.new}"; done 
+          popd
           git add -A
           git commit -m "save decrypted files"
           git push
